@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cine Pato - Cartelera con Buscador</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+
+  <h1>🎬 Cartelera Cine Pato</h1>
+
+  <!-- Buscador -->
+  <div class="search-box">
+    <input type="text" id="search-input" placeholder="Buscar película...">
+    <button id="search-button">Buscar</button>
+  </div>
+
+  <!-- Carrusel -->
+  <div class="swiper">
+    <div class="swiper-wrapper" id="carousel"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+
+  <!-- Detalles de la película -->
+  <div id="movie-details" class="hidden">
+    <h2 id="title"></h2>
+    <p id="overview"></p>
+    <p><strong>Calificación:</strong> <span id="rating"></span></p>
+    <div id="trailer"></div>
+    <h3>Reseñas:</h3>
+    <div id="reviews"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
