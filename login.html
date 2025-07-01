@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Cine Pato</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+  <h1>Inicia sesión en Cine Pato</h1>
+  <div class="form-container">
+    <input type="text" id="username" placeholder="Nombre de usuario o email">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Iniciar sesión</button>
+    <p>¿No tienes cuenta? <a href="register.html">Regístrate</a></p>
+  </div>
+  <script>
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const user = users.find(u => (u.username === username || u.email === username) && u.password === password);
+      if (user) {
+        localStorage.setItem("isLoggedIn", "true");
+        alert("¡Bienvenido, " + user.username + "!");
+        window.location.href = "index.html";
+      } else {
+        alert("Credenciales incorrectas.");
+      }
+    }
+  </script>
+</body>
+</html>

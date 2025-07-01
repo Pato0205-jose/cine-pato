@@ -1,16 +1,18 @@
 body {
-  font-family: 'Helvetica Neue', sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(180deg, #000 0%, #111 100%);
-  color: #eee;
   min-height: 100vh;
+  background: #000;
+  color: #eee;
 }
+
+/* Título iluminado tipo neón */
 h1 {
   text-align: center;
-  margin: 20px 0;
-  color: #f4c542;
+  margin: 30px 0;
   font-size: 48px;
+  color: #f4c542;
   text-shadow:
     0 0 10px #f4c542,
     0 0 20px #f4c542,
@@ -20,72 +22,53 @@ h1 {
 }
 
 @keyframes neon-blink {
-  from {
-    text-shadow:
-      0 0 10px #f4c542,
-      0 0 20px #f4c542,
-      0 0 40px #f4c542,
-      0 0 80px #f4c542;
-    opacity: 1;
-  }
-  to {
-    text-shadow:
-      0 0 2px #f4c542,
-      0 0 5px #f4c542,
-      0 0 10px #f4c542,
-      0 0 20px #f4c542;
-    opacity: 0.8;
-  }
+  from {opacity: 1;}
+  to {opacity: 0.8;}
 }
 
-
-h2, h3 {
-  text-align: center;
-  margin: 20px 0;
-  color: #f4c542;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-}
-
+/* Buscador */
 .search-box {
   text-align: center;
-  margin: 30px 0;
+  margin: 20px 0;
 }
 
-.search-box input {
+.search-box input, .search-box select {
   padding: 12px;
-  width: 300px;
+  width: 250px;
   border-radius: 8px;
-  border: 1px solid #f4c542;
-  outline: none;
-  font-size: 16px;
-  background: #222;
+  border: 2px solid #f4c542;
+  background: #111;
   color: #eee;
-  transition: 0.3s;
+  font-size: 16px;
+  box-shadow: 0 0 15px #f4c54260;
+  margin: 0 5px;
 }
 
-.search-box input:focus {
-  box-shadow: 0 0 10px #f4c542;
+.search-box input:focus, .search-box select:focus {
+  box-shadow: 0 0 20px #f4c542;
 }
 
 .search-box button {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  margin-left: 10px;
   cursor: pointer;
   background: #f4c542;
   color: #000;
   font-weight: bold;
   font-size: 16px;
-  transition: 0.3s;
+  box-shadow: 0 0 15px #f4c54280;
+  transition: background 0.3s;
 }
 
 .search-box button:hover {
-  background: #ffdb4d;
+  background: #ffe75e;
 }
 
+/* Carrusel */
 .swiper {
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
   padding-top: 20px;
   padding-bottom: 50px;
 }
@@ -94,32 +77,34 @@ h2, h3 {
   width: 100%;
   border-radius: 15px;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  transition: transform 0.4s, box-shadow 0.4s;
+  box-shadow: 0 0 25px rgba(244, 197, 66, 0.5);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .swiper-slide img:hover {
-  transform: scale(1.1);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(244, 197, 66, 0.8);
 }
 
 .swiper-pagination-bullet {
   background: #f4c542 !important;
   opacity: 0.7;
-  transition: 0.3s;
 }
 
 .swiper-pagination-bullet-active {
-  background: #fff !important;
+  background: #ffffff !important;
   opacity: 1;
 }
 
+/* Detalles de la película */
 #movie-details {
-  margin-top: 40px;
-  background: #222;
+  width: 80%;
+  margin: 40px auto;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #f4c542;
+  box-shadow: 0 0 30px #f4c54280;
   padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  border-radius: 20px;
 }
 
 #movie-details h2 {
@@ -127,19 +112,60 @@ h2, h3 {
   margin-bottom: 10px;
 }
 
-.hidden {
-  display: none;
-}
-
 #trailer iframe {
   width: 100%;
   height: 400px;
   margin-top: 20px;
   border-radius: 10px;
+  border: 2px solid #f4c54255;
+  box-shadow: 0 0 20px #f4c54240;
 }
-#trailer p, #reviews p {
+
+.actors {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.actors img {
+  width: 100px;
+  border-radius: 8px;
+}
+
+.actors div {
   text-align: center;
-  color: #aaa;
-  font-style: italic;
-  margin-top: 20px;
+}
+
+.carousel img {
+  width: 200px;
+  margin: 10px;
+  border-radius: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Botón cerrar sesión */
+.logout-container {
+  text-align: right;
+  width: 90%;
+  margin: 20px auto 0;
+}
+
+.logout-container button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #f4c542;
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 0 15px #f4c54280;
+  transition: background 0.3s;
+}
+
+.logout-container button:hover {
+  background: #ffe75e;
 }

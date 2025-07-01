@@ -1,93 +1,132 @@
-const apiKey = "5f35bee03c189a6a68aa0631ab208c1f"; // Tu key de TMDB
-const imageBase = "https://image.tmdb.org/t/p/w500";
+const apiKey = '5f35bee03c189a6a68aa0631ab208c1f';
+const apiUrl = 'https://api.themoviedb.org/3';
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadMovies(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=es-MX&page=1`);
-});
-
-// Escucha el botón de buscar
-document.getElementById("search-button").addEventListener("click", () => {
-  const query = document.getElementById("search-input").value.trim();
-  if (query !== "") {
-    const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-MX&query=${encodeURIComponent(query)}`;
-    loadMovies(searchUrl);
-  }
-});
-
-function loadMovies(url) {
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      const carousel = document.getElementById("carousel");
-      carousel.innerHTML = ""; // limpia el carrusel
-
-      if (data.results.length === 0) {
-        carousel.innerHTML = "<p>No se encontraron resultados.</p>";
-        return;
-      }
-
-      data.results.forEach(movie => {
-        if (!movie.poster_path) return; // omite películas sin póster
-        const slide = document.createElement("div");
-        slide.classList.add("swiper-slide");
-        slide.innerHTML = `
-          <img src="${imageBase + movie.poster_path}" alt="${movie.title}" data-id="${movie.id}">
-        `;
-        carousel.appendChild(slide);
-      });
-
-      initSwiper();
-      addListeners();
-    })
-    .catch(err => console.error("Error al cargar películas:", err));
+// Verificar sesión
+if (!localStorage.getItem("isLoggedIn")) {
+  window.location.href = "login.html";
 }
 
-function initSwiper() {
-  new Swiper('.swiper', {
+// Buscar películas o series según filtro y texto
+function searchMovies() {
+  const query = document.getElementById('searchInput').value.trim();
+  const type = document.getElementById('typeFilter').value;
+
+  // Limpiar detalles anteriores
+  document.getElementById('movie-details').innerHTML = '';
+  document.getElementById('movie-details').classList.add('hidden');
+
+  let endpoint;
+  if (type === 'movie') {
+    endpoint = '/search/movie';
+  } else if (type === 'tv') {
+    endpoint = '/search/tv';
+  } else {
+    endpoint = '/search/multi';
+  }
+
+  fetch(`${apiUrl}${endpoint}?api_key=${apiKey}&language=es-ES&query=${query}`)
+    .then(res => res.json())
+    .then(data => showResults(data.results))
+    .catch(console.error);
+}
+
+// Mostrar resultados en carrusel
+function showResults(items) {
+  const results = document.getElementById('results');
+  results.innerHTML = '';
+
+  if (!items || items.length === 0) {
+    results.innerHTML = '<p style="text-align:center; color:#f4c542;">No se encontraron resultados.</p>';
+    return;
+  }
+
+  items.forEach(item => {
+    const title = item.title || item.name || "Sin título";
+    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
+    const overview = item.overview || "Sin sinopsis disponible.";
+
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.innerHTML = `
+      <img src="${poster}" alt="${title}" onclick="showDetails(${item.id}, '${item.media_type || (item.title ? 'movie' : 'tv')}')">
+      <h3>${title}</h3>
+      <p>${overview.substring(0, 100)}...</p>
+    `;
+    results.appendChild(slide);
+  });
+
+  new Swiper(".mySwiper", {
     slidesPerView: 3,
     spaceBetween: 30,
-    grabCursor: true,
-    pagination: { el: '.swiper-pagination', clickable: true }
+    pagination: { el: ".swiper-pagination", clickable: true }
   });
 }
 
-function addListeners() {
-  document.querySelectorAll('.swiper-slide img').forEach(img => {
-    img.addEventListener('click', () => showMovieDetails(img.dataset.id));
-  });
-}
+// Mostrar detalles de una película o serie
+function showDetails(id, type) {
+  const details = document.getElementById('movie-details');
+  details.classList.remove('hidden');
+  details.innerHTML = '';
 
-function showMovieDetails(id) {
-  document.getElementById("movie-details").classList.remove("hidden");
-
-  fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=es-MX`)
-    .then(res => res.json())
-    .then(movie => {
-      document.getElementById("title").textContent = movie.title;
-      document.getElementById("overview").textContent = movie.overview;
-      document.getElementById("rating").textContent = movie.vote_average.toFixed(1);
-    });
-
-  fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}&language=es-MX`)
+  fetch(`${apiUrl}/${type}/${id}?api_key=${apiKey}&language=es-ES`)
     .then(res => res.json())
     .then(data => {
-      const trailerDiv = document.getElementById("trailer");
-      const video = data.results.find(v => v.site === "YouTube" && v.type === "Trailer");
-      trailerDiv.innerHTML = video
-        ? `<iframe src="https://www.youtube.com/embed/${video.key}" frameborder="0" allowfullscreen></iframe>`
-        : "<p>Tráiler no disponible</p>";
-    });
+      let releaseDate = data.release_date || data.first_air_date || 'Desconocida';
+      details.innerHTML = `<h2>${data.title || data.name}</h2><p>Fecha de lanzamiento: ${releaseDate}</p>`;
 
-  fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${apiKey}&language=es-MX`)
-    .then(res => res.json())
-    .then(data => {
-      const reviewsDiv = document.getElementById("reviews");
-      if (data.results.length > 0) {
-        reviewsDiv.innerHTML = data.results.slice(0, 3).map(r => `
-          <p><strong>${r.author}:</strong> ${r.content}</p>
-        `).join("");
-      } else {
-        reviewsDiv.innerHTML = "<p>No hay reseñas disponibles.</p>";
-      }
+      fetch(`${apiUrl}/${type}/${id}/credits?api_key=${apiKey}&language=es-ES`)
+        .then(res => res.json())
+        .then(credits => {
+          if (credits.cast && credits.cast.length > 0) {
+            let actorsHTML = "<h3>Actores principales:</h3><div class='actors'>";
+            credits.cast.slice(0, 5).forEach(actor => {
+              const img = actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : '';
+              actorsHTML += `<div><img src="${img}" alt="${actor.name}"><p>${actor.name}</p></div>`;
+            });
+            actorsHTML += "</div>";
+            details.innerHTML += actorsHTML;
+          }
+        });
+
+      fetch(`${apiUrl}/${type}/${id}/images?api_key=${apiKey}`)
+        .then(res => res.json())
+        .then(images => {
+          if (images.backdrops && images.backdrops.length > 0) {
+            let imagesHTML = "<h3>Imágenes:</h3><div class='carousel'>";
+            images.backdrops.slice(0, 5).forEach(img => {
+              imagesHTML += `<img src="https://image.tmdb.org/t/p/w500${img.file_path}">`;
+            });
+            imagesHTML += "</div>";
+            details.innerHTML += imagesHTML;
+          }
+        });
+
+      fetch(`${apiUrl}/${type}/${id}/videos?api_key=${apiKey}&language=es-ES`)
+        .then(res => res.json())
+        .then(videos => {
+          const trailer = videos.results.find(v => v.type === "Trailer");
+          if (trailer) {
+            details.innerHTML += `<h3>Tráiler:</h3><div id="trailer"><iframe src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen></iframe></div>`;
+          } else {
+            details.innerHTML += `<p>Tráiler no disponible.</p>`;
+          }
+        });
     });
 }
+
+// Cargar películas populares al abrir la página
+function loadPopular() {
+  fetch(`${apiUrl}/movie/popular?api_key=${apiKey}&language=es-ES`)
+    .then(res => res.json())
+    .then(data => showResults(data.results))
+    .catch(console.error);
+}
+
+// Botón de cerrar sesión
+function logout() {
+  localStorage.removeItem("isLoggedIn");
+  window.location.href = "login.html";
+}
+
+// Ejecutar al cargar la página
+loadPopular();

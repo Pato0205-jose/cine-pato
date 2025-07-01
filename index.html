@@ -2,37 +2,36 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Cine Pato - Cartelera con Buscador</title>
+  <title>Cine Pato</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <!-- Swiper.js CSS para el carrusel -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 </head>
 <body>
+  <h1>Cine Pato</h1>
 
-  <h1>🎬 Cartelera Cine Pato</h1>
-
-  <!-- Buscador -->
-  <div class="search-box">
-    <input type="text" id="search-input" placeholder="Buscar película...">
-    <button id="search-button">Buscar</button>
+  <div class="logout-container">
+    <button onclick="logout()">Cerrar sesión</button>
   </div>
 
-  <!-- Carrusel -->
-  <div class="swiper">
-    <div class="swiper-wrapper" id="carousel"></div>
+  <div class="search-box">
+    <select id="typeFilter">
+      <option value="all">Todos</option>
+      <option value="movie">Películas</option>
+      <option value="tv">Series</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Buscar películas o series...">
+    <button onclick="searchMovies()">Buscar</button>
+  </div>
+
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper" id="results"></div>
     <div class="swiper-pagination"></div>
   </div>
 
-  <!-- Detalles de la película -->
-  <div id="movie-details" class="hidden">
-    <h2 id="title"></h2>
-    <p id="overview"></p>
-    <p><strong>Calificación:</strong> <span id="rating"></span></p>
-    <div id="trailer"></div>
-    <h3>Reseñas:</h3>
-    <div id="reviews"></div>
-  </div>
+  <div id="movie-details" class="hidden"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
